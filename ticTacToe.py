@@ -1,5 +1,6 @@
 import random
 import time
+import sys
 
 theboard = {'topL': '', 'topM': '', 'topR': '',
             'midL': '', 'midM': '', 'midR': '',
@@ -53,6 +54,18 @@ def turn(turn):
         print('Where do you wanna play?')
         print('You can choose: topL, topM, topR, midL, midM, midR, lowL, lowM, lowR')
         position = input('So what do you choose? ')
+        #i = positionList.index(position)
+        #chosenList = []
+        #chosen = positionList.pop(i)
+        #chosenList.append(chosen)
+        #if position in chosenList:
+        #    print('You already pick this position. Try other one.')
+        positionList.remove(position)
+        if positionList == []:
+            winner()
+            sys.exit()
+        print(positionList)
+        print(chosenList)
         p = True
         c = False
     if turn == 'cpu':
@@ -65,15 +78,31 @@ def turn(turn):
         time.sleep(1)
         print('.')
         time.sleep(1)
-        position = random.choice(list(theboard.keys()))
+        position = random.choice(positionList)
+        #i = positionList.index(position)
+        #chosenList = []
+        #chosen = positionList.pop(i)
+        #chosenList.append(chosenList)
+        #if position in chosenList:
+        #    print('You already pick this position. Try other one.')
+        positionList.remove(position)
+        if positionList == []:
+            winner()
+            sys.exit()
+        print(positionList)
+        print(chosen)
         print("My choice is " + position + ': ')
+
+        '''
         while theboard.setdefault(position):
             print("That's sad, someone already chose this position.")
             print("A will choose again...")
+            if position in positionsList:
+                positionsList.remove(position)
             print('.')
             time.sleep(1)
-            position = random.choice(list(theboard.keys()))
-            print("My new choice is " + position + ': ')
+            position = random.choice(positionsList)
+            print("My new choice is " + position + ': ')'''
         c = True
         p = False
     return position, p, c
@@ -85,6 +114,8 @@ def move(position, player, cpu):
         theboard[position] = 'O'
     return theboard[position]
 
+
+'''
 def winner():
     values = list(theboard.values())
     for i in range(0, 7, 3):
@@ -128,11 +159,12 @@ def winner():
                     print('*+*' * 18)
                     print("I have won the game! The creation beats its creator!")
                     print('*+*' * 18)
-
+'''
+positionList = list(theboard.keys())
 menu()
 choice, face = start()
 firstTurn, nextTurn = first(choice, face)
-while True:
+while positionList:
     playerPosition, p, c = turn(firstTurn)
     move(playerPosition, p, c)
     printBoard(theboard) 
@@ -146,4 +178,3 @@ while True:
     if aux == 'end':
         break'''
     #cpu continua jogando mesmo estando tudo completo
-winner()
