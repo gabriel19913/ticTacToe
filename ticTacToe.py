@@ -25,12 +25,10 @@ def first(c, coin):
     else:
         if coin == c:
             print('O gosh you start!')
-            print('+' * 65)
             nextPlay = next('player')
             return 'player', nextPlay
         else:
             print("That's good! I am lucky!")
-            print('+' * 65)
             nextPlay = next('cpu')
             return 'cpu', nextPlay
 
@@ -42,28 +40,31 @@ def next(firstTurn):
     return nextTurn
 
 def printBoard(board):
-    print(board['topL'] + '|' + board['topM'] + '|' + board['topR'])
-    print('-' * 5)
-    print(board['midL'] + '|' + board['midM'] + '|' + board['midR'])
-    print('-' * 5)
-    print(board['lowL'] + '|' + board['lowM'] + '|' + board['lowR'])
+    print('{:^3}{}{:^3}{}{:^3}'.format(board['topL'], '|', board['topM'], '|', board['topR']))
+    #print(board['topL'] + '|' + board['topM'] + '|' + board['topR'])
+    print('-' * 11)
+    print('{:^3}{}{:^3}{}{:^3}'.format(board['midL'], '|', board['midM'], '|', board['midR']))
+    #print(board['midL'] + '|' + board['midM'] + '|' + board['midR'])
+    print('-' * 11)
+    print('{:^3}{}{:^3}{}{:^3}'.format(board['lowL'], '|', board['lowM'], '|', board['lowR']))
+    #print(board['lowL'] + '|' + board['lowM'] + '|' + board['lowR'])
 
 def turn(turn):
     if turn == 'player':
         print('-' * 65)
         print('Where do you wanna play?')
         print('You can choose: topL, topM, topR, midL, midM, midR, lowL, lowM, lowR')
-        position = input('So what do you choose? ')
-        #i = positionList.index(position)
-        #chosenList = []
-        #chosen = positionList.pop(i)
-        #chosenList.append(chosen)
-        #if position in chosenList:
-        #    print('You already pick this position. Try other one.')
-        positionList.remove(position)
-        if positionList == []:
-            winner()
-            sys.exit()
+        while True:
+            try:
+                position = input('So what do you choose? ')
+                positionList.remove(position)
+                break
+            except ValueError:
+                while ValueError:
+                    print('.-.' * 18)
+                    print("This position was already chosen. Pick another one.")
+                    print('.-.' * 18)
+                    break
         p = True
         c = False
     if turn == 'cpu':
@@ -77,16 +78,10 @@ def turn(turn):
         print('.')
         time.sleep(1)
         position = random.choice(positionList)
-        #i = positionList.index(position)
-        #chosenList = []
-        #chosen = positionList.pop(i)
-        #chosenList.append(chosenList)
-        #if position in chosenList:
-        #    print('You already pick this position. Try other one.')
         positionList.remove(position)
-        if positionList == []:
-            winner()
-            sys.exit()
+        #if positionList == []:
+        #    winner()
+        #    sys.exit()
         print("My choice is " + position + ': ')
         c = True
         p = False
@@ -102,7 +97,7 @@ def move(position, player, cpu):
 def winner():
     playerWin = False
     cpuWin = False
-    draw = False
+    draw = True
     values = list(theboard.values())
     for i in range(0, 7, 3):
         if (values[i] == values[i+1]) and (values[i+1] == values[i+2]):
@@ -145,11 +140,9 @@ def winner():
                     cpuWin = True
                     playerWin = False
                     draw = False
-    if playerWin == False and cpuWin == False:
-        draw = True
     return playerWin, cpuWin, draw
 
-def winnerMassage(pWin, cWin, d):
+def winnerMessage(pWin, cWin):
     if pWin == True:
         print('*+*' * 18)
         print("You have won the game! That's why you are my master!")
@@ -158,24 +151,28 @@ def winnerMassage(pWin, cWin, d):
         print('*+*' * 18)
         print("I have won the game! The creation beats its creator!")
         print('*+*' * 18)
-    if d == True:
-        print('*+*' * 18)
-        print("It's a draw!")
-        print('*+*' * 18)
 
 positionList = list(theboard.keys())
 menu()
 choice, face = start()
 firstTurn, nextTurn = first(choice, face)
 while positionList:
-    playerPosition, p, c = turn(firstTurn)
-    move(playerPosition, p, c)
-    printBoard(theboard)
-    pWin, cWin, d = winner()
+    pWin, cWin, draw = winner()
     if (pWin == True) or (cWin == True):
         break
-    playerPosition, p, c = turn(nextTurn)
-    move(playerPosition, p, c)
+    position1, p1, c1 = turn(firstTurn)
+    move(position1, p1, c1)
     printBoard(theboard)
-    # I need to do a verification for draw situation
-winnerMassage(pWin, cWin, d)
+    pWin, cWin, draw = winner()
+    if (pWin == True) or (cWin == True):
+        break
+    if (positionList == []) and (pWin == False) and (cWin == False) and (draw == True):
+        print('*+*' * 18)
+        print("It's a draw!")
+        print('*+*' * 18)
+        sys.exit()
+    position2, p2, c2 = turn(nextTurn)
+    move(position2, p2, c2)
+    printBoard(theboard)
+    # When the winner happens in the last round it shows the draw message (kinda workind know, maybe it's better to make another function to put inside the loop)
+winnerMessage(pWin, cWin)
